@@ -12,19 +12,20 @@ import numpy as np
 import random as rm
 
 
-
 # Definir los estados 
 states = ["ocupado","desocupado","espera","desinfectando"]
 
 # Transición de estados respecto a cada uno 
-transitionName = [["OO","OD","OE","OD"],["DO","DD","DE","DDE"],["EO","ED","EE","EDE"],["DEO","DED","DEE","DEDE"]]
+transitionName = [["OO","OD"],["DO","DD","DE","DDE"],["EE","EDE"],["DEO","DED","DEDE"]]
 
 # Matriz de probabilidad 
-transitionMatrix = [[0.5,0.5,0,0],[0,0.6,0.4,0],[0.3,0.3,0.1,0.3],[0.4,0.4,0,0.2]]
+transitionMatrix = [[0.66,0.34],[0.2,0.2,0.51,0.09],[0.84,0.16],[0.19,0.19,0.62]]
+
 
 
 #Definir el estado inicial
-activityToday = "desocupado"
+activityToday = "desinfectando"
+fin="espera"
 
 def markov(days,activityToday):
   
@@ -35,79 +36,61 @@ def markov(days,activityToday):
         if activityToday == "ocupado":
             change = np.random.choice(transitionName[0],replace=True,p=transitionMatrix[0])
             if change == "OO":
-                prob = prob * 0.5
+                prob = prob * 0.66
                 activityList.append("ocupado")
                 pass
-            elif change == "OD":
-                prob = prob * 0.5
+            else:
+                prob = prob * 0.34
                 activityToday = "desocupado"
                 activityList.append("desocupado")
-            elif change == "OE":
-                prob = prob * 0
-                activityToday = "espera"
-                activityList.append("espera")
-            else:
-                prob = prob * 0
-                activityToday = "desinfectando"
-                activityList.append("desinfectando")
+            
                 
         elif activityToday == "desocupado":
             change = np.random.choice(transitionName[1],replace=True,p=transitionMatrix[1])
             if change == "DD":
-                prob = prob * 0.6
+                prob = prob * 0.2
                 activityList.append("desocupado")
                 pass
             elif change == "DO":
-                prob = prob * 0
+                prob = prob * 0.2
                 activityToday = "ocupado"
                 activityList.append("ocupado")
             elif change == "DE":
-                prob = prob * 0.4
+                prob = prob * 0.51
                 activityToday = "espera"
                 activityList.append("espera")
             else:
-                prob = prob * 0
-                activityToday = "espera"
-                activityList.append("espera")
+                prob = prob * 0.09
+                activityToday = "desinfectando"
+                activityList.append("desinfectando")
                 
         elif activityToday == "espera":
             change = np.random.choice(transitionName[2],replace=True,p=transitionMatrix[2])
             if change == "EE":
-                prob = prob * 0.1
+                prob = prob * 0.84
                 activityList.append("espera")
                 pass
-            elif change == "EO":
-                prob = prob * 0.3
-                activityToday = "ocupado"
-                activityList.append("ocupado")
-            elif change == "ED":
-                prob = prob * 0.3
-                activityToday = "desocupado"
-                activityList.append("desocupado")
             else:
-                prob = prob * 0.3
+                prob = prob * 0.16
                 activityToday = "desinfectando"
                 activityList.append("desinfectando")
                 
                 
         elif activityToday == "desinfectando":
-            change = np.random.choice(transitionName[3],replace=True,p=transitionMatrix[2])
+            change = np.random.choice(transitionName[2],replace=True,p=transitionMatrix[2])
             if change == "DEDE":
-                prob = prob * 0.2
+                prob = prob * 0.62
                 activityList.append("desinfectando")
                 pass
             elif change == "DEO":
-                prob = prob * 0.4
+                prob = prob * 0.19
                 activityToday = "ocupado"
                 activityList.append("ocupado")
-            elif change == "DED":
-                prob = prob * 0.4
+                
+            else:
+                prob = prob * 0.19
                 activityToday = "desocupado"
                 activityList.append("desocupado")
-            else:
-                prob = prob * 0
-                activityToday = "desinfectando"
-                activityList.append("desinfectando")
                 
                 
                 
@@ -124,10 +107,11 @@ for iterations in range(1,10000):
 
 
 
+
 for smaller_list in list_activity:
-    if(smaller_list[2] == "desinfectando"): #Seleccionar el estado final 
+    if(smaller_list[2] == fin): #Seleccionar el estado final 
         count += 1
 
 # Calcular la probabilidad de iniciar en el estado (ActivityToday) y terminar en el establecido en smaller_list
 percentage = (count/10000) * 100
-print("La probabilidad de iniciar en el estado: " + activityToday + "  y Terminar en el estado: desinfectando = " + str(percentage) + "%")
+print("La probabilidad de iniciar en el estado: " + activityToday + " y Terminar en el estado: "+  fin + " = " + str(percentage) + "%")
